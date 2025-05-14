@@ -1,0 +1,24 @@
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.molecule-card {
+    transition: transform 0.2s;
+}
+
+.molecule-card:hover {
+    transform: translateY(-2px);
+}
+
+#loading {
+    margin: 20px 0;
+}
+
+.error-message {
+    color: #dc3545;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #dc3545;
+    border-radius: 4px;
+    background-color: #f8d7da;
+}

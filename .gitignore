@@ -1,0 +1,28 @@
+# 忽略分子图和SDF相关目录及其内容
+data/mol_graphs/
+data/test.sdf/
+data/training.sdf/
+data/val.sdf/
+
+# 推荐同时忽略常见的Python缓存和虚拟环境
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+.venv/
+
+# Jupyter Notebook检查点
+.ipynb_checkpoints/
+
+# 其他常见大文件
+*.npy
+*.pt
+*.pth
+*.ckpt
+*.log
+
+# IDE配置
+.idea/
+.vscode/
