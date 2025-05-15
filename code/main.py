@@ -68,7 +68,7 @@ def main():
     path_test = osp.join(data_path, "test.txt")
     path_molecules = osp.join(data_path, "ChEBI_defintions_substructure_corpus.cp")
 
-    graph_data_path = osp.join(data_path, "mol_graphs.zip")
+    graph_data_path = os.path.join(data_path, "mol_graphs.zip")
 
 
 

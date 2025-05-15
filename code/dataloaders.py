@@ -1,4 +1,3 @@
-
 import numpy as np
 import csv
 import shutil
@@ -230,7 +229,7 @@ class MoleculeGraphDataset(GeoDataset):
         self.idx_to_cid = {}
         i = 0
         for raw_path in self.raw_paths:
-            cid = int(raw_path.split('/')[-1][:-6])
+            cid = int(os.path.basename(raw_path)[:-6])
             self.idx_to_cid[i] = cid
             i += 1
 
@@ -283,7 +282,7 @@ class MoleculeGraphDataset(GeoDataset):
         for raw_path in self.raw_paths:
             # Read data from `raw_path`.
 
-            cid = int(raw_path.split('/')[-1][:-6])
+            cid = int(os.path.basename(raw_path)[:-6])
 
             edge_index, x = self.process_graph(raw_path)
             data = Data(x=x, edge_index = edge_index)
