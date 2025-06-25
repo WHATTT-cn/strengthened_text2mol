@@ -1,19 +1,211 @@
-.card {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+/* 全局样式 */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url('../img/background.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* 左侧导航栏样式 */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100vh;
+    background-color: #f8f9fa;
+    color: #333;
+    padding-top: 20px;
+    overflow-y: auto;
+    box-shadow: 2px 0 8px rgba(0, 123, 255, 0.3);
+    z-index: 100;
+}
+
+.sidebar-header {
+    padding: 0 20px;
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-align: center;
+    color: #007BFF;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar ul li {
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+}
+
+.sidebar ul li a {
+    color: #333;
+    text-decoration: none;
+    display: block;
+    font-size: 16px;
+    padding-left: 10px;
+    position: relative;
+}
+
+.sidebar ul li a:hover {
+    color: #007BFF;
+}
+
+.sidebar ul li.active:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.sidebar ul li.active a {
+    color: #007BFF;
+    font-weight: 500;
+}
+
+.sidebar ul li.active a::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 20px;
+    width: 3px;
+    background-color: #007BFF;
+    border-radius: 3px;
+}
+
+/* 右侧主体内容样式 */
+.main-content {
+    margin-left: 250px;
+    padding: 20px;
+    min-height: 100vh;
+	display:flex;
+	flex-direction: column;
+	align-items: center; /* 水平居中 */
+	justify-content: center; /* 垂直居中 */
+}
+
+
+/*头部图片样式 */
+#style-header {
+	display: flex;
+	align-items: center; /* 水平居中 */
+	justify-content: center; /* 垂直居中 */
+	margin: 0 auto;
+}
+.header-img {
+	/* 最大宽度占满父容器，保证在不同宽度下自适应 */
+	max-width: 40%; 
+	/* 高度自动计算，维持原始宽高比 */
+	height: auto; 
+	display:inline-block;
+	text-align:center;
+	object-fit: contain; /* 确保图片完整显示在容器内 */
+}
+
+/* 搜索区域样式 */
+.search-container {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 800px;
+}
+
+.search-container h5 {
+    font-size: 20px;
+    margin-bottom: 15px;
+}
+
+.search-container label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.search-container textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+    margin-bottom: 15px;
+}
+
+.search-container button {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+	
+}
+
+.search-container button:hover {
+    background-color: #0056b3;
+}
+
+/* 加载动画样式 */
+#loading {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.spinner-border {
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    vertical-align: text-bottom;
+    border: 0.25em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
+}
+
+@keyframes spinner-border {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* 搜索结果样式 */
+#results {
+    margin-top: 20px;
 }
 
 .molecule-card {
-    transition: transform 0.2s;
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
 }
 
 .molecule-card:hover {
-    transform: translateY(-2px);
+    transform: translateY(-5px);
 }
 
-#loading {
-    margin: 20px 0;
+.molecule-card h5 {
+    font-size: 18px;
+    margin-bottom: 10px;
 }
 
+.molecule-card p {
+    margin-bottom: 10px;
+}
+
+.molecule-card small {
+    color: #777;
+}
+
+/* 错误消息样式 */
 .error-message {
     color: #dc3545;
     padding: 10px;
@@ -21,4 +213,39 @@
     border: 1px solid #dc3545;
     border-radius: 4px;
     background-color: #f8d7da;
+}
+
+/* 底部信息框样式 */
+.style-footer {
+  background-color: #e8f4ff; /* 类似 evimed 的浅蓝背景，可根据实际调整 */
+  border-top: 1px solid #d1e9ff; /* 顶部浅灰边框，增加层次感 */
+	padding:1px 10px;
+	position: fixed;
+  /* 固定在视口底部 */
+  bottom: 0; 
+  /* 让 div 占满视口宽度 */
+  left: 0; right: 0;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+   float:right;
+}
+
+.footer-content p {
+    font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .style-footer {
+        padding: 15px 0;
+    }
+    
+    .footer-content p {
+        font-size: 14px;
+    }
 }

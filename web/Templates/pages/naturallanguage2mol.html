@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分子种类查询</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入自定义样式 -->
+    <link href="../../static/css/style.css" rel="stylesheet">
+    <!-- 引入 Evimed 页面类似的字体和图标库，这里使用 Font Awesome 示例 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!-- 左侧导航栏 -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3>Text2Mol</h3>
+        </div>
+        <ul class="list-unstyled components">
+            <li class="active">
+                <a href="naturallanguage2mol.html">分子种类查询</a>
+            </li>
+			<li class="active">
+                <a href="molquery.html">分子信息查询</a>
+            </li>
+			<li class="active">
+                <a href="moldesigner.html">智慧药物设计</a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- 右侧主体内容 -->
+    <div class="main-content">
+        <!-- 中间搜索区域 -->
+        <div class="container mt-4">
+			<!--放置两张图片 -->
+			<div class="col-md-8 offset-md-2" id="style-header">
+				<!-- 第一张图片 h1 -->
+				<img src="../../static/img/h1.png" alt="h1" class="header-img"> 
+				<!-- 第二张图片 h2_query -->
+				<img src="../../static/img/h2_query.png" alt="h2_query" class="header-img"> 
+			</div>
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">分子描述搜索</h5>
+                            <div class="form-group">
+                                <label for="textInput">输入分子描述：</label>
+                                <textarea class="form-control" id="textInput" rows="3" 
+                                        placeholder="例如：无味的白色晶体或结晶粉末，带有轻微的苦味"></textarea>
+                            </div>
+                            <button class="btn btn-primary mt-3" onclick="searchMolecules()" style="float:right">搜索</button>
+                        </div>
+                    </div>
+
+                    <div id="loading" class="text-center mt-4" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">加载中...</span>
+                        </div>
+                    </div>
+
+                    <div id="results" class="mt-4"></div>
+                </div>
+            </div>
+        </div>
+		<footer class="style-footer">
+			<div class="footer-content">
+				<p>分子の百度——跨模态分子检索项目</p>
+			</div>
+		 </footer>
+    </div>
+	
+	
+
+    <!-- 引入 Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 引入自定义 JS -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
