@@ -1,10 +1,10 @@
-function searchMolecules() {
+function queryMolecule() {
     const textInput = document.getElementById('textInput');
     const resultsDiv = document.getElementById('results');
     const loadingDiv = document.getElementById('loading');
-    
+
     if (!textInput.value.trim()) {
-        showError('请输入分子描述');
+        showError('请输入分子ID或标准命名');
         return;
     }
 
@@ -12,7 +12,7 @@ function searchMolecules() {
     loadingDiv.style.display = 'block';
     resultsDiv.innerHTML = '';
 
-    fetch('/search', {
+    fetch('/molquery', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -51,9 +51,6 @@ function displayResults(results) {
             <div class="card-body">
                 <h5 class="card-title">分子ID: ${result.id}</h5>
                 <p class="card-text">${result.description}</p>
-                <div class="text-muted">
-                    <small>相似度得分: ${result.score.toFixed(4)}</small>
-                </div>
             </div>
         `;
         resultsDiv.appendChild(card);
