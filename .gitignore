@@ -4,7 +4,23 @@ data/test.sdf/
 data/training.sdf/
 data/val.sdf/
 
-# 推荐同时忽略常见的Python缓存和虚拟环境
+# 忽略过程权重文件
+test_output/weights_pretrained.01-1.46.pt
+test_output/weights_pretrained.02-0.59.pt
+test_output/weights_pretrained.04-0.47.pt
+test_output/weights_pretrained.06-0.37.pt
+test_output/weights_pretrained.07-0.36.pt
+test_output/weights_pretrained.09-0.30.pt
+test_output/weights_pretrained.10-0.30.pt
+test_output/weights_pretrained.13-0.27.pt
+test_output/weights_pretrained.15-0.20.pt
+test_output/weights_pretrained.16-0.19.pt
+test_output/weights_pretrained.17-0.18.pt
+test_output/weights_pretrained.22-0.18.pt
+test_output/weights_pretrained.28-0.15.pt
+test_output/weights_pretrained.37-0.11.pt
+
+# 常见的Python缓存和虚拟环境
 __pycache__/
 *.pyc
 *.pyo
