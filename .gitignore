@@ -16,13 +16,6 @@ venv/
 # Jupyter Notebook检查点
 .ipynb_checkpoints/
 
-# 其他常见大文件
-*.npy
-*.pt
-*.pth
-*.ckpt
-*.log
-
 # IDE配置
 .idea/
 .vscode/
