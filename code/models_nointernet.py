@@ -9,6 +9,7 @@ from torch_geometric.nn import global_mean_pool
 
 
 from torch.nn import TransformerDecoder, TransformerDecoderLayer
+import os
 
 class MLPModel(nn.Module):
     def __init__(self, ninp, nout, nhid):
@@ -37,7 +38,7 @@ class MLPModel(nn.Module):
         
         self.other_params = list(self.parameters()) #get all but bert params
         
-        model_path = './pretrained_models/scibert'
+        model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pretrained_models', 'scibert')
         self.text_transformer_model = BertModel.from_pretrained(model_path, local_files_only=True)
         self.text_transformer_model.train()
 
@@ -94,7 +95,7 @@ class GCNModel(nn.Module):
 
         self.other_params = list(self.parameters()) #get all but bert params
         
-        model_path = './pretrained_models/scibert'
+        model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pretrained_models', 'scibert')
         self.text_transformer_model = BertModel.from_pretrained(model_path, local_files_only=True)
         self.text_transformer_model.train()
 
@@ -177,7 +178,7 @@ class AttentionModel(nn.Module):
 
         self.other_params = list(self.parameters()) #get all but bert params
         
-        model_path = './pretrained_models/scibert'
+        model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pretrained_models', 'scibert')
         self.text_transformer_model = BertModel.from_pretrained(model_path, local_files_only=True)
         self.text_transformer_model.train()
 

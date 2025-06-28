@@ -1,10 +1,10 @@
-function searchMolecules() {
+function designDrug() {
     const textInput = document.getElementById('textInput');
     const resultsDiv = document.getElementById('results');
     const loadingDiv = document.getElementById('loading');
-    
+
     if (!textInput.value.trim()) {
-        showError('请输入分子描述');
+        showError('请输入药物分子的性质');
         return;
     }
 
@@ -12,12 +12,12 @@ function searchMolecules() {
     loadingDiv.style.display = 'block';
     resultsDiv.innerHTML = '';
 
-    fetch('/search', {
+    fetch('/moldesigner', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({text: textInput.value})
+        body: JSON.stringify({properties: textInput.value})
     })
     .then(response => response.json())
     .then(data => {
@@ -30,7 +30,7 @@ function searchMolecules() {
     })
     .catch(error => {
         loadingDiv.style.display = 'none';
-        showError('搜索过程中发生错误，请稍后重试');
+        showError('设计过程中发生错误，请稍后重试');
         console.error('Error:', error);
     });
 }
@@ -40,7 +40,7 @@ function displayResults(results) {
     resultsDiv.innerHTML = '';
 
     if (!results || results.length === 0) {
-        resultsDiv.innerHTML = '<div class="alert alert-info">未找到匹配的分子</div>';
+        resultsDiv.innerHTML = '<div class="alert alert-info">未找到相关设计建议</div>';
         return;
     }
 
@@ -49,11 +49,7 @@ function displayResults(results) {
         card.className = 'card molecule-card mb-3';
         card.innerHTML = `
             <div class="card-body">
-                <h5 class="card-title">分子ID: ${result.id}</h5>
-                <p class="card-text">${result.description}</p>
-                <div class="text-muted">
-                    <small>相似度得分: ${result.score.toFixed(4)}</small>
-                </div>
+                <p class="card-text">${result.suggestion}</p>
             </div>
         `;
         resultsDiv.appendChild(card);
