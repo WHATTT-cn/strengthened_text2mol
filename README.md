@@ -16,6 +16,6 @@ python版本：3.9\
  transformers
  huggingface-hub
  flask
- pymsql=1.1.1`
+ pymsql`
 
 
