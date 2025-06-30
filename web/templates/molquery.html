@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分子信息查询</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- 引入自定义样式 -->
+    <link href="../static/css/style.css" rel="stylesheet">
+    <!-- 引入 Evimed 页面类似的字体和图标库，这里使用 Font Awesome 示例 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        .validation-result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .validation-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .validation-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .caption-section {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        
+        .caption-section h4 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+        }
+        
+        .caption-text {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #28a745;
+            margin-top: 10px;
+            max-height: 500px;
+            overflow-y: auto;
+            white-space: pre-line;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <!-- 左侧导航栏 -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h3>Text2Mol</h3>
+        </div>
+        <ul class="list-unstyled components">
+    <li class="{% if active_page == 'naturallanguage2mol' %}active{% endif %}">
+        <a href="{{ url_for('naturallanguage2mol') }}">分子种类查询</a>
+    </li>
+    <li class="{% if active_page == 'molquery' %}active{% endif %}">
+        <a href="{{ url_for('molquery_page') }}">分子信息查询</a>
+    </li>
+    <li class="{% if active_page == 'moldesigner' %}active{% endif %}">
+        <a href="{{ url_for('moldesigner_page') }}">智慧药物设计</a>
+    </li>
+</ul>
+    </div>
+
+    <!-- 右侧主体内容 -->
+    <div class="main-content">
+        <!-- 中间搜索区域 -->
+        <div class="container mt-4">
+			<!--放置两张图片 -->
+			<div class="col-md-8 offset-md-2" id="style-header">
+				<!-- 第一张图片 h1 -->
+				<img src="../static/img/h1.png" alt="h1" class="header-img">
+				<!-- 第二张图片 h2_info -->
+				<img src="../static/img/h2_info.png" alt="h2_info" class="header-img">
+			</div>
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">分子信息搜索</h5>
+                            <div class="form-group">
+                                <label for="textInput">输入分子ID或SMILES表达式：</label>
+                                <textarea class="form-control" id="textInput" rows="3" 
+                                        placeholder="例如：25244316 或 CC(=O)Oc1ccccc1C(=O)O"></textarea>
+                            </div>
+                            <button class="btn btn-primary mt-3" onclick="searchMolecules()" style="float:right">搜索</button>
+                        </div>
+                    </div>
+
+                    <div id="loading" class="text-center mt-4" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">搜索中...</span>
+                        </div>
+                    </div>
+
+                    <div id="validation_result" class="validation-result" style="display: none;"></div>
+                    <div id="results" class="mt-4"></div>
+                </div>
+            </div>
+        </div>
+		<footer class="style-footer">
+			<div class="footer-content">
+				<p>分子の百度——跨模态分子检索项目</p>
+			</div>
+		 </footer>
+    </div>
+	
+	
+
+    <!-- 引入 Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 引入自定义 JS -->
+    <script src="{{ url_for('static', filename='js/molquery.js') }}"></script>
+    <script>
+        function searchMolecules() {
+            const input = document.getElementById('textInput').value.trim();
+            
+            if (!input) {
+                alert('请输入分子ID或SMILES表达式');
+                return;
+            }
+            
+            // 显示加载动画
+            document.getElementById('loading').style.display = 'block';
+            
+            // 清除之前的结果
+            document.getElementById('validation_result').style.display = 'none';
+            document.getElementById('results').innerHTML = '';
+            
+            // 首先验证输入
+            validateInput(input);
+            
+            // 然后进行搜索
+            performSearch(input);
+        }
+        
+        function validateInput(input) {
+            // 检查是否为SMILES表达式（简单检查）
+            const isSmiles = /[CcOoNnSsPpFfCcLlBbRrIi]/.test(input) && /[=#@\[\]()]/.test(input);
+            
+            if (isSmiles) {
+                // 验证SMILES
+                fetch('/smiles_validation', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ smiles: input })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.is_valid) {
+                        showValidationResult('✓ SMILES表达式有效', true);
+                    } else {
+                        showValidationResult('✗ ' + data.error, false);
+                    }
+                })
+                .catch(error => {
+                    showValidationResult('验证失败: ' + error.message, false);
+                });
+            } else {
+                // 验证CID
+                if (/^\d+$/.test(input)) {
+                    showValidationResult('✓ 分子ID格式正确', true);
+                } else {
+                    showValidationResult('✗ 分子ID应为数字', false);
+                }
+            }
+        }
+        
+        function showValidationResult(message, isSuccess) {
+            const resultDiv = document.getElementById('validation_result');
+            resultDiv.textContent = message;
+            resultDiv.className = 'validation-result ' + (isSuccess ? 'validation-success' : 'validation-error');
+            resultDiv.style.display = 'block';
+        }
+        
+        function performSearch(input) {
+            fetch('/molecule_query', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ molecule_input: input })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // 隐藏加载动画
+                document.getElementById('loading').style.display = 'none';
+                
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    displaySearchResults(data.results);
+                }
+            })
+            .catch(error => {
+                // 隐藏加载动画
+                document.getElementById('loading').style.display = 'none';
+                showError('搜索失败: ' + error.message);
+            });
+        }
+        
+        function displaySearchResults(results) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '';
+
+            if (!results || results.length === 0) {
+                resultsDiv.innerHTML = '<div class="alert alert-info">未找到匹配的分子</div>';
+                return;
+            }
+
+            // 解析生成描述中的每个结果
+            const generatedCaption = results[0].generated_caption;
+            const lines = generatedCaption.split('\n\n');
+            
+            lines.forEach((line, index) => {
+                if (line.trim()) {
+                    // 解析每行的信息
+                    const match = line.match(/\[CID: (\d+), 总相似度: ([\d.]+)\]\s*(.*)/);
+                    if (match) {
+                        const cid = match[1];
+                        const similarity = parseFloat(match[2]);
+                        const description = match[3];
+                        
+                        const card = document.createElement('div');
+                        card.className = 'card molecule-card mb-3';
+                        card.innerHTML = `
+                            <div class="card-body">
+                                <h5 class="card-title">分子ID: ${cid}</h5>
+                                <p class="card-text">${description}</p>
+                                <div class="text-muted">
+                                    <small>相似度得分: ${similarity.toFixed(4)}</small>
+                                </div>
+                            </div>
+                        `;
+                        resultsDiv.appendChild(card);
+                    } else {
+                        // 如果解析失败，直接显示原始行
+                        const card = document.createElement('div');
+                        card.className = 'card molecule-card mb-3';
+                        card.innerHTML = `
+                            <div class="card-body">
+                                <p class="card-text">${line}</p>
+                            </div>
+                        `;
+                        resultsDiv.appendChild(card);
+                    }
+                }
+            });
+        }
+        
+        function showError(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="error-message">
+                    ${message}
+                </div>
+            `;
+        }
+        
+        // 添加回车键支持
+        document.addEventListener('DOMContentLoaded', function() {
+            const textInput = document.getElementById('textInput');
+            textInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    searchMolecules();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

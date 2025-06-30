@@ -17,5 +17,3 @@ python版本：3.9\
  huggingface-hub
  flask
  pymsql`
-
-

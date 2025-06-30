@@ -12,8 +12,8 @@ project_root = os.path.dirname(current_dir)
 sys.path.insert(0, project_root)
 
 # 导入必要的模块
-from code.models_nointernet import MLPModel
-from code.dataloaders_nointernet import GenerateData
+from text2mol_code.models import MLPModel
+from text2mol_code.dataloaders import GenerateData
 
 app = Flask(__name__)
 
@@ -89,7 +89,7 @@ def name_to_input(name):
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('naturallanguage2mol.html', active_page='naturallanguage2mol')
 
 
 @app.route('/search', methods=['POST'])
@@ -262,5 +262,23 @@ def moldesigner():
         return jsonify({'error': str(e)}), 500
 
 
+# 渲染分子种类查询页面的路由
+@app.route('/pagenaturallanguage2mol')
+def naturallanguage2mol():
+    return render_template('naturallanguage2mol.html', active_page='naturallanguage2mol')
+
+
+# 渲染分子信息查询页面的路由
+@app.route('/pagemolquery')
+def molquery_page():
+    return render_template('molquery.html', active_page='molquery')
+
+
+# 渲染智慧药物设计页面的路由
+@app.route('/pagemoldesigner')
+def moldesigner_page():
+    return render_template('moldesigner.html', active_page='moldesigner')
+
+
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

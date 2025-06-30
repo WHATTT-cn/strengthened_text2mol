@@ -1,67 +1,129 @@
-function queryMolecule() {
-    const textInput = document.getElementById('textInput');
-    const resultsDiv = document.getElementById('results');
-    const loadingDiv = document.getElementById('loading');
-
-    if (!textInput.value.trim()) {
-        showError('请输入分子ID或标准命名');
+function searchMolecules() {
+    const textInput = document.getElementById('textInput').value.trim();
+    if (!textInput) {
+        alert('请输入分子ID或标准命名');
         return;
     }
 
     // 显示加载动画
-    loadingDiv.style.display = 'block';
-    resultsDiv.innerHTML = '';
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('results').innerHTML = '';
 
     fetch('/molquery', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({text: textInput.value})
+        body: JSON.stringify({
+            input: textInput
+        })
     })
     .then(response => response.json())
     .then(data => {
-        loadingDiv.style.display = 'none';
-        if (data.error) {
-            showError(data.error);
+        document.getElementById('loading').style.display = 'none';
+        
+        if (data.status === 'success') {
+            displayResults(data.results, 'search');
         } else {
-            displayResults(data.results);
+            document.getElementById('results').innerHTML = `
+                <div class="alert alert-danger" role="alert">
+                    ${data.error || '搜索失败'}
+                </div>
+            `;
         }
     })
     .catch(error => {
-        loadingDiv.style.display = 'none';
-        showError('搜索过程中发生错误，请稍后重试');
-        console.error('Error:', error);
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('results').innerHTML = `
+            <div class="alert alert-danger" role="alert">
+                网络错误: ${error.message}
+            </div>
+        `;
     });
 }
 
-function displayResults(results) {
-    const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = '';
-
-    if (!results || results.length === 0) {
-        resultsDiv.innerHTML = '<div class="alert alert-info">未找到匹配的分子</div>';
+function generateCaption() {
+    const textInput = document.getElementById('textInput').value.trim();
+    if (!textInput) {
+        alert('请输入分子ID或标准命名');
         return;
     }
 
-    results.forEach(result => {
-        const card = document.createElement('div');
-        card.className = 'card molecule-card mb-3';
-        card.innerHTML = `
-            <div class="card-body">
-                <h5 class="card-title">分子ID: ${result.id}</h5>
-                <p class="card-text">${result.description}</p>
+    // 显示加载动画
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('results').innerHTML = '';
+
+    fetch('/molecule_captioning', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            molecule_input: textInput
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('loading').style.display = 'none';
+        
+        if (data.status === 'success') {
+            displayResults(data.results, 'caption');
+        } else {
+            document.getElementById('results').innerHTML = `
+                <div class="alert alert-danger" role="alert">
+                    ${data.error || '生成描述失败'}
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('results').innerHTML = `
+            <div class="alert alert-danger" role="alert">
+                网络错误: ${error.message}
             </div>
         `;
-        resultsDiv.appendChild(card);
     });
 }
 
-function showError(message) {
+function displayResults(results, type) {
     const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = `
-        <div class="error-message">
-            ${message}
-        </div>
-    `;
+    
+    if (type === 'search') {
+        // 显示搜索结果
+        let html = '<h5>搜索结果：</h5>';
+        results.forEach((result, index) => {
+            html += `
+                <div class="molecule-card">
+                    <h6>分子ID: ${result.id}</h6>
+                    <p><strong>描述:</strong> ${result.description}</p>
+                </div>
+            `;
+        });
+        resultsDiv.innerHTML = html;
+    } else if (type === 'caption') {
+        // 显示captioning结果
+        let html = '<h5>分子描述生成结果：</h5>';
+        results.forEach((result, index) => {
+            html += `
+                <div class="molecule-card">
+                    <h6>分子ID: ${result.id}</h6>
+                    <p><strong>原始描述:</strong> ${result.original_description}</p>
+                    <p><strong>生成描述:</strong> <span class="text-success">${result.generated_caption}</span></p>
+                </div>
+            `;
+        });
+        resultsDiv.innerHTML = html;
+    }
 }
+
+// 添加回车键支持
+document.addEventListener('DOMContentLoaded', function() {
+    const textInput = document.getElementById('textInput');
+    textInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            searchMolecules();
+        }
+    });
+});

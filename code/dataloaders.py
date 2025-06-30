@@ -57,7 +57,12 @@ class GenerateData():
 
 
   def prep_text_tokenizer(self):
-    self.text_tokenizer = BertTokenizerFast.from_pretrained("allenai/scibert_scivocab_uncased")
+    if hasattr(self, 'tokenizer_name') and self.tokenizer_name == 'biobart':
+      from transformers import BartTokenizer
+      print("current tokenizer is ", self.tokenizer_name)
+      self.text_tokenizer = BartTokenizer.from_pretrained('GanjinZero/biobart-base')
+    else:
+      self.text_tokenizer = BertTokenizerFast.from_pretrained("allenai/scibert_scivocab_uncased")
  
 
   def store_descriptions(self):
@@ -391,7 +396,12 @@ class GenerateDataAttention():
 
 
   def prep_text_tokenizer(self):
-    self.text_tokenizer = BertTokenizerFast.from_pretrained("allenai/scibert_scivocab_uncased")
+    if hasattr(self, 'tokenizer_name') and self.tokenizer_name == 'biobart':
+      from transformers import BartTokenizer
+      print("current tokenizer is ", self.tokenizer_name)
+      self.text_tokenizer = BartTokenizer.from_pretrained('GanjinZero/biobart-base')
+    else:
+      self.text_tokenizer = BertTokenizerFast.from_pretrained("allenai/scibert_scivocab_uncased")
  
 
   def store_descriptions(self):

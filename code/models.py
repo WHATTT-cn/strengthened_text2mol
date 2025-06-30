@@ -1,4 +1,3 @@
-
 from transformers import BertTokenizerFast, BertModel
 
 import torch
@@ -10,11 +9,13 @@ from torch_geometric.nn import global_mean_pool
 
 
 from torch.nn import TransformerDecoder, TransformerDecoderLayer
+import os
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
 
 class MLPModel(nn.Module):
     def __init__(self, ninp, nout, nhid):
         super(MLPModel, self).__init__()
-        
 
         self.text_hidden1 = nn.Linear(ninp, nout)
 
@@ -38,7 +39,8 @@ class MLPModel(nn.Module):
         
         self.other_params = list(self.parameters()) #get all but bert params
         
-        self.text_transformer_model = BertModel.from_pretrained('allenai/scibert_scivocab_uncased')
+        model_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pretrained_models', 'scibert')
+        self.text_transformer_model = BertModel.from_pretrained(model_path, local_files_only=True)
         self.text_transformer_model.train()
 
     def forward(self, text, molecule, text_mask = None):
@@ -60,6 +62,43 @@ class MLPModel(nn.Module):
         text_x = text_x * torch.exp(self.temp)
 
         return text_x, x
+
+    def generate_molecule_description(self, molecule, data_generator, all_mol_embeddings, all_cids, top_k=20):
+        """使用跨模态检索模型生成分子描述"""
+        batch_size = molecule.size(0)
+        
+        # 通过模型处理分子特征
+        with torch.no_grad():
+            # 使用分子编码器部分
+            x = self.relu(self.mol_hidden1(molecule))
+            x = self.relu(self.mol_hidden2(x))
+            x = self.mol_hidden3(x)
+            x = self.ln1(x)
+            x = x * torch.exp(self.temp)
+            
+            # 将分子特征转换为numpy数组用于相似度计算
+            mol_embedding = x.cpu().numpy()
+            
+            # 计算与数据库中所有分子的相似度
+            sims = cosine_similarity(mol_embedding, all_mol_embeddings)
+            
+            # 获取最相似的top_k个分子
+            top_indices = np.argsort(sims[0])[::-1][:top_k]
+            
+            # 收集最相似分子的描述
+            descriptions = []
+            for idx in top_indices:
+                cid = all_cids[idx]
+                similarity = float(sims[0][idx])
+                if cid in data_generator.descriptions:
+                    desc = data_generator.descriptions[cid]
+                    descriptions.append(f"[CID: {cid}, 相似度: {similarity:.3f}] {desc}")
+            
+            if descriptions:
+                # 返回所有最相似分子的描述
+                return "\n\n".join(descriptions)
+            else:
+                return "无法生成分子性质描述"
 
 
 
